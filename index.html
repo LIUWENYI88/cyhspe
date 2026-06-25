@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2026 by anonymous (http://jsbin.com/jiyufucaqa/1/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>長億體育班－『事務管理』</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;900&family=Zen+Maru+Gothic:wght@400;500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'Zen Maru Gothic', 'Noto Sans TC', 'sans-serif'],
+                    },
+                    colors: {
+                        // 馬卡龍灰延伸色系
+                        mgray: { 50: '#faf9f8', 100: '#f0efee', 200: '#e0dedc', 800: '#4a4846' },
+                        peach: { 50: '#fff5f2', 100: '#ffe8e0', 400: '#ff8a66', 500: '#ff6b3d' },
+                        mint: { 50: '#f2fbf7', 100: '#e0f6eb', 500: '#34d399', 600: '#059669' },
+                        lavender: { 50: '#f5f3ff', 100: '#ede9fe', 400: '#a78bfa', 500: '#8b5cf6' },
+                        cutePink: { 50: '#fdf2f8', 100: '#fce7f3', 500: '#f472b6' },
+                        cuteBlue: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#38bdf8' },
+                        
+                        // 馬卡龍淡咖啡色系 (Macaron Coffee)
+                        macaronCoffee: {
+                            50: '#FAF6F0',   // 極淡馬卡龍咖
+                            100: '#F3EFEA',  // 溫柔粉咖 (區塊底色)
+                            200: '#E8DFD3',  // 輕咖啡邊框
+                            300: '#D5C4B1',  // 拿鐵深邊框
+                            500: '#A48E77',  // 瑪琪雅朵咖啡
+                            800: '#4E433A',  // 深焙咖啡文字
+                        }
+                    },
+                    boxShadow: {
+                        'cute': '0 10px 25px -5px rgba(78, 67, 58, 0.05), 0 8px 10px -6px rgba(78, 67, 58, 0.02)',
+                        'block': '0 4px 6px -1px rgba(78, 67, 58, 0.06), 0 2px 4px -1px rgba(78, 67, 58, 0.03)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            /* 馬卡龍暖咖微點點背景 */
+            background-color: #FAF6F0;
+            background-image: radial-gradient(#E8DFD3 1.5px, transparent 1.5px);
+            background-size: 30px 30px;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #D5C4B1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #A48E77; }
+        
+        /* 小方塊點擊動畫 */
+        .student-block {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .student-block:active {
+            transform: scale(0.92);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 text-macaronCoffee-800">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <!-- 頂部導覽列：調整為灰白色底色呈現 bg-mgray-50 與 border-mgray-200 -->
+        <header class="bg-mgray-50 border border-mgray-200 rounded-3xl p-6 shadow-cute flex flex-col md:flex-row justify-between items-center gap-4 relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 text-mgray-200/40 opacity-80 text-9xl pointer-events-none">
+                <i class="fa-solid fa-shield-cat"></i>
+            </div>
+            
+            <div class="flex items-center gap-4 relative z-10">
+                <!-- 專屬 Logo：維持雲端圖片連結，並加上 mix-blend-multiply 達到去背融合效果 -->
+                <img src="https://lh3.googleusercontent.com/d/1d5slEIiYkgGwq2Mjq6GFtc6yg4aEGngI" 
+                     alt="CYHS Athlete Logo" 
+                     class="h-16 md:h-20 object-contain drop-shadow-sm mix-blend-multiply"
+                     onerror="this.onerror=null; this.src='https://placehold.co/200x80/FAF6F0/4E433A?text=CYHS+Athlete'; this.classList.add('rounded-xl', 'border', 'border-mgray-200');">
+                <div class="flex flex-col md:flex-row md:items-center gap-3">
+                    <!-- 大標『破折號』顏色與大標文字一樣 (text-stone-700) -->
+                    <h1 class="text-2xl md:text-3xl lg:text-4xl font-black text-stone-700 tracking-widest drop-shadow-sm flex items-center">
+                        長億體育班<span class="text-stone-700 mx-1 md:mx-2">－</span>『事務管理』
+                    </h1>
+                    
+                    <!-- Q版貼圖風格圖示：維持原封不動 -->
+                    <div class="flex gap-2 md:gap-4 items-center ml-2 md:ml-4">
+                        <!-- 田徑貼圖 (連結1) -->
+                        <img src="https://lh3.googleusercontent.com/d/1KsOl-dP_Lyt43jb4xvpQ0un4Tb2U46ql" 
+                             alt="田徑加油" 
+                             class="h-[70px] md:h-[90px] object-contain drop-shadow-md hover:scale-110 transition-transform -rotate-3 cursor-pointer"
+                             title="加油！"
+                             onerror="this.onerror=null; this.outerHTML='<div class=\\'text-5xl md:text-6xl hover:scale-110 transition-transform cursor-pointer -rotate-3\\' style=\\'filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); text-shadow: -3px -3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff, 3px 3px 0 #fff, 0 3px 0 #fff, 0 -3px 0 #fff, 3px 0 0 #fff, -3px 0 0 #fff;\\'>🏃‍♀️</div>';">
+                        
+                        <!-- 空手道貼圖 (連結2) -->
+                        <img src="https://lh3.googleusercontent.com/d/1xGk47VYVq-8sW71bH8LFiBaJwrDRBQfz" 
+                             alt="空手道" 
+                             class="h-[90px] md:h-[110px] object-contain drop-shadow-md hover:scale-110 transition-transform rotate-3 cursor-pointer"
+                             title="空手道 (對打)"
+                             onerror="this.onerror=null; this.outerHTML='<div class=\\'text-5xl md:text-6xl hover:scale-110 transition-transform cursor-pointer rotate-3\\' style=\\'filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); text-shadow: -3px -3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff, 3px 3px 0 #fff, 0 3px 0 #fff, 0 -3px 0 #fff, 3px 0 0 #fff, -3px 0 0 #fff;\\'>🥋</div>';">
+
+                        <!-- 擊劍貼圖 (連結3) -->
+                        <img src="https://lh3.googleusercontent.com/d/1bm_qtY2sDQMjE4D09mtPkcELHTEtCxy9" 
+                             alt="擊劍" 
+                             class="h-[90px] md:h-[110px] object-contain drop-shadow-md hover:scale-110 transition-transform -rotate-6 cursor-pointer"
+                             title="擊劍 (長刺)"
+                             onerror="this.onerror=null; this.outerHTML='<div class=\\'text-5xl md:text-6xl hover:scale-110 transition-transform cursor-pointer -rotate-6\\' style=\\'filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); text-shadow: -3px -3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff, 3px 3px 0 #fff, 0 3px 0 #fff, 0 -3px 0 #fff, 3px 0 0 #fff, -3px 0 0 #fff;\\'>🤺</div>';">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 可愛獎牌點綴圖示 (外框同步改為灰白色邊框) -->
+            <div class="relative z-10 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full p-3 shadow-sm border-2 border-mgray-200 transform rotate-3 hover:rotate-6 transition-transform cursor-default" title="長億體育，衝啊！">
+                <div class="bg-peach-100 text-peach-500 w-14 h-14 rounded-full flex items-center justify-center text-3xl animate-pulse">
+                    <i class="fa-solid fa-medal"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- 左欄：雙軌行事曆 (維持原封不動) -->
+            <section class="lg:col-span-4 bg-macaronCoffee-100 rounded-3xl p-6 shadow-cute flex flex-col h-[750px] border border-macaronCoffee-200/80">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold flex items-center gap-3 text-macaronCoffee-800">
+                        <span class="bg-lavender-100 text-lavender-500 w-10 h-10 rounded-2xl flex items-center justify-center shadow-sm rotate-3 border-2 border-white"><i class="fa-regular fa-calendar-check text-lg"></i></span>
+                        近期日程與任務
+                    </h2>
+                </div>
+                
+                <div class="flex gap-2 bg-white/50 p-1.5 rounded-2xl mb-4 w-fit flex-wrap border border-macaronCoffee-200">
+                    <button onclick="filterSchedule('all')" id="btn-sch-all" class="px-3 py-1.5 rounded-xl text-sm font-bold bg-white text-stone-700 shadow-sm transition-all">全部</button>
+                    <button onclick="filterSchedule('team')" id="btn-sch-team" class="px-3 py-1.5 rounded-xl text-sm font-bold text-stone-400 hover:text-stone-700 transition-all">🏃‍♂️ 校隊</button>
+                    <button onclick="filterSchedule('admin')" id="btn-sch-admin" class="px-3 py-1.5 rounded-xl text-sm font-bold text-stone-400 hover:text-stone-700 transition-all">🏛️ 行政</button>
+                    <button onclick="filterSchedule('other')" id="btn-sch-other" class="px-3 py-1.5 rounded-xl text-sm font-bold text-stone-400 hover:text-stone-700 transition-all">☕ 其他</button>
+                </div>
+
+                <!-- 新增日程表單 -->
+                <form id="scheduleForm" class="mb-4 bg-white/70 p-3 rounded-2xl border border-macaronCoffee-200 space-y-2">
+                    <div class="flex gap-2">
+                        <input type="date" id="schDate" required class="flex-1 px-3 py-2 rounded-xl border border-macaronCoffee-200 text-sm focus:ring-2 focus:ring-macaronCoffee-300 outline-none">
+                        <select id="schType" class="px-3 py-2 rounded-xl border border-macaronCoffee-200 text-sm focus:ring-2 focus:ring-macaronCoffee-300 outline-none bg-white font-bold text-stone-600">
+                            <option value="team">校隊事務</option>
+                            <option value="admin">學校行政</option>
+                            <option value="other">其他事務</option>
+                        </select>
+                    </div>
+                    <input type="text" id="schTitle" required placeholder="新增任務或會議名稱..." class="w-full px-3 py-2 rounded-xl border border-macaronCoffee-200 text-sm focus:ring-2 focus:ring-macaronCoffee-300 outline-none">
+                    <button type="submit" class="w-full bg-macaronCoffee-800 hover:bg-macaronCoffee-700 text-white font-bold py-2.5 rounded-xl transition-transform hover:-translate-y-0.5 shadow-md"><i class="fa-solid fa-plus mr-1"></i> 加入行事曆</button>
+                </form>
+
+                <!-- 日程列表 -->
+                <div id="scheduleList" class="flex-1 overflow-y-auto pr-2 space-y-3">
+                    <!-- 動態生成內容 -->
+                </div>
+            </section>
+
+            <!-- 右欄：隊員名單與待辦任務追蹤 (維持原封不動) -->
+            <section class="lg:col-span-8 bg-macaronCoffee-100 rounded-3xl p-6 shadow-cute flex flex-col h-[750px] border border-macaronCoffee-200/80">
+                
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 shrink-0 border-b border-macaronCoffee-200 pb-4">
+                    <h2 class="text-xl font-bold flex items-center gap-3 text-macaronCoffee-800">
+                        <span class="bg-mint-100 text-mint-500 w-10 h-10 rounded-2xl flex items-center justify-center shadow-sm -rotate-3 border-2 border-white"><i class="fa-solid fa-clipboard-list text-lg"></i></span>
+                        待辦事項管理
+                    </h2>
+                    
+                    <!-- 隊伍選擇與管理區 -->
+                    <div class="flex items-center gap-2 bg-white/70 p-1.5 rounded-xl border border-macaronCoffee-200 shadow-sm w-full md:w-auto">
+                        <select id="teamSelector" onchange="switchTeam(this.value)" class="bg-white px-3 py-1.5 rounded-lg border border-macaronCoffee-200 text-sm font-bold text-stone-700 outline-none focus:ring-2 focus:ring-mint-400 flex-1 md:min-w-[140px] cursor-pointer">
+                            <!-- 選項由 JS 動態產生 -->
+                        </select>
+                        <button onclick="createNewTeam()" class="text-stone-400 hover:text-mint-500 bg-white px-2.5 py-1.5 rounded-lg border border-macaronCoffee-200 shadow-sm transition-colors" title="建立新隊伍">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <button onclick="renameCurrentTeam()" class="text-stone-400 hover:text-cutePink-500 bg-white px-2.5 py-1.5 rounded-lg border border-macaronCoffee-200 shadow-sm transition-colors" title="修改隊伍名稱">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button onclick="deleteCurrentTeam()" class="text-stone-400 hover:text-red-400 bg-white px-2.5 py-1.5 rounded-lg border border-macaronCoffee-200 shadow-sm transition-colors" title="刪除目前隊伍">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 區塊 1：任務追蹤區 -->
+                <div class="flex justify-between items-end mb-3 shrink-0">
+                    <h3 class="text-lg font-bold text-macaronCoffee-800 flex items-center gap-2">
+                        <span class="bg-peach-100 text-peach-500 w-7 h-7 rounded-lg flex items-center justify-center shadow-sm"><i class="fa-solid fa-box-open text-xs"></i></span>
+                        追蹤項目
+                    </h3>
+                </div>
+
+                <form id="taskForm" class="mb-4 flex gap-2 shrink-0">
+                    <input type="text" id="newTaskTitle" required placeholder="建立新的追蹤項目 (例如：縣長盃同意書、五月份隊費...)" class="flex-1 px-4 py-2.5 rounded-xl border border-macaronCoffee-200 text-sm focus:ring-2 focus:ring-macaronCoffee-300 outline-none shadow-sm bg-white">
+                    <button type="submit" class="bg-macaronCoffee-800 hover:bg-macaronCoffee-700 text-white font-bold py-2.5 px-5 rounded-xl transition-transform hover:-translate-y-0.5 shadow-md"><i class="fa-solid fa-folder-plus mr-1"></i> 建立項目</button>
+                </form>
+
+                <!-- 任務卡片列表 (Scrollable) -->
+                <div id="trackingCardsContainer" class="flex-1 overflow-y-auto pr-2 space-y-4 mb-4">
+                    <!-- 任務卡片動態生成區 -->
+                </div>
+
+                <!-- 區塊 2：隊員名冊管理 (固定於底部) -->
+                <div class="bg-white/60 rounded-2xl border border-macaronCoffee-200 p-4 shrink-0 shadow-inner">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-sm font-bold text-macaronCoffee-800 flex items-center gap-2">
+                            <span class="bg-white text-stone-400 w-6 h-6 rounded-md flex items-center justify-center shadow-sm border border-macaronCoffee-200"><i class="fa-solid fa-address-book text-xs"></i></span>
+                            隊員名冊管理
+                        </h3>
+                        <button onclick="batchImportStudents()" class="bg-white border border-macaronCoffee-200 text-stone-500 hover:bg-macaronCoffee-100 hover:text-stone-700 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+                            <i class="fa-solid fa-file-import"></i> 匯入名單
+                        </button>
+                    </div>
+                    
+                    <div class="flex flex-wrap items-center gap-2" id="studentPillContainer">
+                        <!-- 隊員小標籤將在此生成 -->
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </div>
+
+    <!-- 自訂彈出視窗 (Modal) -->
+    <div id="customModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-stone-900/40 backdrop-blur-sm transition-opacity opacity-0">
+        <div class="bg-macaronCoffee-50 rounded-3xl p-6 md:p-8 max-w-md w-full mx-4 shadow-cute border border-macaronCoffee-200 transform scale-95 transition-all duration-300" id="customModalContent">
+            <h3 id="modalTitle" class="text-xl font-black text-macaronCoffee-800 mb-3 flex items-center gap-2"></h3>
+            <div id="modalBody" class="text-stone-600 mb-6 text-sm font-medium leading-relaxed"></div>
+            <div class="flex justify-end gap-3" id="modalActions">
+                <!-- 動態按鈕 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === 狀態管理 (Data Models) ===
+        let schedules = [];
+        let students = []; // [{ id: 1, name: '王小明', teamId: 'default' }]
+        let trackingTasks = []; // [{ id: 101, title: '同意書', completedBy: [1, 2], teamId: 'default' }]
+        let scheduleFilter = 'all'; 
+        let teams = []; // [{ id: 'default', name: '長億田徑校隊' }]
+        let currentTeamId = 'default';
+
+        // === 讀取資料與遷移防呆 ===
+        try {
+            const savedSchedules = localStorage.getItem('cyhs_schedules');
+            if(savedSchedules) schedules = JSON.parse(savedSchedules);
+
+            // 讀取隊伍資料
+            const savedTeams = localStorage.getItem('cyhs_teams');
+            if(savedTeams) {
+                teams = JSON.parse(savedTeams);
+                // 把舊的「長億田徑校隊」修正為更符合目前的泛用名稱
+                const defTeam = teams.find(t => t.id === 'default' && t.name === '長億田徑校隊');
+                if(defTeam) defTeam.name = '體育班綜合事務';
+            } else {
+                teams = [{ id: 'default', name: '體育班綜合事務' }];
+            }
+
+            // 讀取目前選擇的隊伍
+            const savedCurrentTeam = localStorage.getItem('cyhs_current_team');
+            if(savedCurrentTeam) currentTeamId = savedCurrentTeam;
+            
+            // 確保當前隊伍存在
+            if(!teams.find(t => t.id === currentTeamId)) currentTeamId = teams[0].id;
+
+            // 讀取學生資料並做舊資料遷移
+            const savedStudents = localStorage.getItem('cyhs_students');
+            if(savedStudents) {
+                students = JSON.parse(savedStudents);
+                students.forEach(s => { if(!s.teamId) s.teamId = 'default'; });
+            }
+
+            // 讀取任務資料並做舊資料遷移
+            const savedTasks = localStorage.getItem('cyhs_tasks');
+            if(savedTasks) {
+                trackingTasks = JSON.parse(savedTasks);
+                trackingTasks.forEach(t => { if(!t.teamId) t.teamId = 'default'; });
+            } else {
+                trackingTasks = [{
+                    id: Date.now(),
+                    title: '新生報到體檢表',
+                    completedBy: [],
+                    teamId: 'default'
+                }];
+            }
+        } catch(e) {
+            console.error("資料讀取失敗", e);
+        }
+
+        // === 儲存資料 ===
+        function saveData() {
+            localStorage.setItem('cyhs_teams', JSON.stringify(teams));
+            localStorage.setItem('cyhs_current_team', currentTeamId);
+            localStorage.setItem('cyhs_schedules', JSON.stringify(schedules));
+            localStorage.setItem('cyhs_students', JSON.stringify(students));
+            localStorage.setItem('cyhs_tasks', JSON.stringify(trackingTasks));
+        }
+
+        // === 自訂對話框系統 ===
+        function showModal(title, bodyHtml, onConfirm, showCancel = true) {
+            const modal = document.getElementById('customModal');
+            const content = document.getElementById('customModalContent');
+            
+            document.getElementById('modalTitle').innerHTML = title;
+            document.getElementById('modalBody').innerHTML = bodyHtml;
+            
+            const actions = document.getElementById('modalActions');
+            actions.innerHTML = '';
+            
+            if(showCancel) {
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'px-4 py-2 rounded-xl text-stone-500 font-bold hover:bg-macaronCoffee-200 transition-colors';
+                cancelBtn.innerText = '取消';
+                cancelBtn.onclick = closeModal;
+                actions.appendChild(cancelBtn);
+            }
+            
+            const confirmBtn = document.createElement('button');
+            confirmBtn.className = 'px-5 py-2 rounded-xl bg-macaronCoffee-800 text-white font-bold hover:bg-macaronCoffee-700 shadow-sm transition-transform hover:-translate-y-0.5';
+            confirmBtn.innerText = '確認';
+            confirmBtn.onclick = () => {
+                if (onConfirm) onConfirm();
+                closeModal();
+            };
+            actions.appendChild(confirmBtn);
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            modal.classList.add('opacity-100');
+            content.classList.replace('scale-95', 'scale-100');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('customModal');
+            const content = document.getElementById('customModalContent');
+            
+            modal.classList.replace('opacity-100', 'opacity-0');
+            content.classList.replace('scale-100', 'scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        // ==========================================
+        //  隊伍管理 (Team Management)
+        // ==========================================
+        function renderTeamSelector() {
+            const selector = document.getElementById('teamSelector');
+            selector.innerHTML = '';
+            teams.forEach(team => {
+                const option = document.createElement('option');
+                option.value = team.id;
+                option.textContent = team.name;
+                if(team.id === currentTeamId) option.selected = true;
+                selector.appendChild(option);
+            });
+        }
+
+        window.switchTeam = (teamId) => {
+            currentTeamId = teamId;
+            saveData();
+            renderRoster();
+            renderTrackingCards();
+        };
+
+        window.createNewTeam = () => {
+            const bodyHtml = `
+                <p class="mb-3 text-stone-500">請輸入新隊伍的名稱（例如：國中部、擊劍代表隊）：</p>
+                <input type="text" id="newTeamInput" placeholder="新隊伍名稱" class="w-full px-4 py-2 rounded-xl border border-macaronCoffee-200 text-sm focus:ring-2 focus:ring-macaronCoffee-300 outline-none bg-white">
+            `;
+            showModal('<i class="fa-solid fa-users text-macaronCoffee-500"></i> 建立新隊伍', bodyHtml, () => {
+                const input = document.getElementById('newTeamInput').value.trim();
+                if(input) {
+                    const newTeamId = 'team_' + Date.now();
+                    teams.push({ id: newTeamId, name: input });
+                    currentTeamId = newTeamId;
+                    saveData();
+                    renderTeamSelector();
+                    renderRoster();
+                    renderTrackingCards();
+                }
+            });
+        };
+
+        window.renameCurrentTeam = () => {
+            const currentTeam = teams.find(t => t.id === currentTeamId);
+            const bodyHtml = `
+                <p class="mb-3 text-stone-500">請輸入新的隊伍名稱：</p>
+                <input type="text" id="renameTeamInput" value="${currentTeam.name}" class="w-full px-4 py-2 rounded-xl border border-macaronCoffee-200 text-sm focus:ring-2 focus:ring-macaronCoffee-300 outline-none bg-white">
+            `;
+            showModal('<i class="fa-solid fa-pen text-cutePink-500"></i> 重新命名隊伍', bodyHtml, () => {
+                const input = document.getElementById('renameTeamInput').value.trim();
+                if(input) {
+                    currentTeam.name = input;
+                    saveData();
+                    renderTeamSelector();
+                }
+            });
+        };
+
+        window.deleteCurrentTeam = () => {
+            if(teams.length <= 1) {
+                showModal('<i class="fa-solid fa-triangle-exclamation text-peach-500"></i> 無法刪除', '這是您唯一的隊伍，至少需要保留一個隊伍喔！', null, false);
+                return;
+            }
+            
+            const currentTeam = teams.find(t => t.id === currentTeamId);
+            showModal(
+                '<i class="fa-solid fa-trash-can text-red-400"></i> 刪除隊伍',
+                `確定要刪除「<b>${currentTeam.name}</b>」嗎？<br><span class="text-peach-500 text-xs mt-1 block font-bold">警告：這會同時刪除該隊伍內所有的隊員與追蹤任務，且無法還原！</span>`,
+                () => {
+                    students = students.filter(s => s.teamId !== currentTeamId);
+                    trackingTasks = trackingTasks.filter(t => t.teamId !== currentTeamId);
+                    teams = teams.filter(t => t.id !== currentTeamId);
+                    
+                    currentTeamId = teams[0].id;
+                    saveData();
+                    renderTeamSelector();
+                    renderRoster();
+                    renderTrackingCards();
+                }
+            );
+        };
+
+        // ==========================================
+        //  隊員名單管理 (Roster)
+        // ==========================================
+        function renderRoster() {
+            const container = document.getElementById('studentPillContainer');
+            container.innerHTML = '';
+            
+            const currentStudents = students.filter(s => s.teamId === currentTeamId);
+            
+            if(currentStudents.length === 0) {
+                container.innerHTML = '<span class="text-xs text-stone-400 italic">目前沒有隊員，請先新增或匯入名單。</span>';
+                return;
+            }
+
+            currentStudents.forEach(stu => {
+                const pill = document.createElement('div');
+                pill.className = 'bg-white border border-macaronCoffee-200 text-stone-700 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-2 shadow-sm';
+                pill.innerHTML = `
+                    ${stu.name}
+                    <button onclick="deleteStudent(${stu.id})" class="text-stone-300 hover:text-red-400 transition-colors focus:outline-none">
+                        <i class="fa-solid fa-xmark text-xs"></i>
+                    </button>
+                `;
+                container.appendChild(pill);
+            });
+        }
+
+        window.batchImportStudents = () => {
+            const currentTeam = teams.find(t => t.id === currentTeamId);
+            const bodyHtml = `
+                <p class="mb-3 text-stone-500">請輸入要加入「<b>${currentTeam.name}</b>」的隊員姓名（多人請用逗號或換行分開）：</p>
+                <textarea id="importTextarea" placeholder="例如：王小明, 陳大華..." class="w-full h-32 p-3 border border-macaronCoffee-200 rounded-xl focus:ring-2 focus:ring-macaronCoffee-300 outline-none resize-none text-sm bg-white"></textarea>
+            `;
+            
+            showModal('<i class="fa-solid fa-file-import text-macaronCoffee-500"></i> 匯入名單', bodyHtml, () => {
+                const input = document.getElementById('importTextarea').value;
+                if(input && input.trim()) {
+                    const names = input.replace(/[，\n]/g, ',').split(',').map(n => n.trim()).filter(n => n !== "");
+                    let addedCount = 0;
+                    names.forEach(name => {
+                        if(!students.find(s => s.name === name && s.teamId === currentTeamId)) {
+                            students.push({ id: Date.now() + Math.random(), name, teamId: currentTeamId });
+                            addedCount++;
+                        }
+                    });
+                    if(addedCount > 0) {
+                        saveData();
+                        renderRoster();
+                        renderTrackingCards();
+                    }
+                }
+            });
+        };
+
+        window.deleteStudent = (id) => {
+            showModal(
+                '<i class="fa-solid fa-triangle-exclamation text-peach-500"></i> 移除隊員', 
+                '確定要移除這位隊員嗎？<br><span class="text-peach-500 text-xs mt-1 block font-bold">注意：這會將他在所有追蹤任務中的紀錄一併刪除。</span>',
+                () => {
+                    students = students.filter(s => s.id !== id);
+                    trackingTasks.forEach(task => {
+                        task.completedBy = task.completedBy.filter(stuId => stuId !== id);
+                    });
+                    saveData();
+                    renderRoster();
+                    renderTrackingCards();
+                }
+            );
+        };
+
+        // ==========================================
+        //  多重任務追蹤卡片 (Tracking Tasks)
+        // ==========================================
+        function renderTrackingCards() {
+            const container = document.getElementById('trackingCardsContainer');
+            container.innerHTML = '';
+            
+            const currentTasks = trackingTasks.filter(t => t.teamId === currentTeamId);
+            const currentStudents = students.filter(s => s.teamId === currentTeamId);
+
+            if(currentTasks.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-stone-400 bg-white/50 rounded-2xl border-2 border-dashed border-macaronCoffee-200">
+                        <i class="fa-solid fa-clipboard-check text-4xl mb-3 text-macaronCoffee-300"></i>
+                        <p class="font-bold">此隊伍目前沒有正在追蹤的項目！</p>
+                        <p class="text-xs mt-1">在上方輸入項目名稱，建立新的待辦清單。</p>
+                    </div>`;
+                return;
+            }
+
+            [...currentTasks].reverse().forEach(task => {
+                const total = currentStudents.length;
+                const completedCount = task.completedBy.length;
+                const progress = total === 0 ? 0 : Math.round((completedCount / total) * 100);
+                const isAllDone = (progress === 100 && total > 0);
+
+                const card = document.createElement('div');
+                card.className = `bg-white border rounded-2xl p-5 transition-shadow shadow-sm hover:shadow-md ${isAllDone ? 'border-mint-200 bg-mint-50/30' : 'border-macaronCoffee-200'}`;
+                
+                let studentBlocksHTML = '';
+                if(currentStudents.length === 0) {
+                    studentBlocksHTML = '<div class="col-span-full text-xs text-stone-400">目前沒有隊員可以顯示。</div>';
+                } else {
+                    currentStudents.forEach(stu => {
+                        const isDone = task.completedBy.includes(stu.id);
+                        const btnClass = isDone 
+                            ? 'bg-mint-500 text-white shadow-block ring-2 ring-mint-200 ring-offset-1' 
+                            : 'bg-macaronCoffee-50 text-stone-600 hover:bg-macaronCoffee-100 border border-macaronCoffee-200/60';
+                        const icon = isDone ? '<i class="fa-solid fa-check text-[10px] mr-1"></i>' : '';
+
+                        studentBlocksHTML += `
+                            <button onclick="toggleTaskStatus(${task.id}, ${stu.id})" class="student-block w-full py-2 px-1 rounded-xl text-sm font-bold flex flex-col items-center justify-center gap-1 ${btnClass}">
+                                <span>${icon}${stu.name}</span>
+                            </button>
+                        `;
+                    });
+                }
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-black text-stone-800 mb-1 flex items-center gap-2">
+                                ${isAllDone ? '<i class="fa-solid fa-circle-check text-mint-500"></i>' : '<i class="fa-solid fa-circle-notch text-peach-400"></i>'}
+                                ${task.title}
+                            </h3>
+                            <div class="flex items-center gap-3">
+                                <div class="flex-1 h-2.5 bg-macaronCoffee-200/50 rounded-full overflow-hidden">
+                                    <div class="h-full rounded-full transition-all duration-500 ${isAllDone ? 'bg-mint-500' : 'bg-peach-400'}" style="width: ${progress}%"></div>
+                                </div>
+                                <span class="text-xs font-bold ${isAllDone ? 'text-mint-600' : 'text-stone-500'} w-10 text-right">${completedCount}/${total}</span>
+                            </div>
+                        </div>
+                        <button onclick="deleteTaskCard(${task.id})" class="text-stone-300 hover:text-red-400 ml-4 p-2 rounded-lg hover:bg-red-50 transition-colors" title="刪除此追蹤項目">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-5 gap-2 mt-4 pt-4 border-t border-macaronCoffee-200/40">
+                        ${studentBlocksHTML}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        document.getElementById('taskForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const titleInput = document.getElementById('newTaskTitle');
+            const title = titleInput.value.trim();
+            if(!title) return;
+
+            trackingTasks.push({
+                id: Date.now(),
+                title: title,
+                completedBy: [],
+                teamId: currentTeamId
+            });
+            saveData();
+            renderTrackingCards();
+            titleInput.value = '';
+        });
+
+        window.toggleTaskStatus = (taskId, stuId) => {
+            const task = trackingTasks.find(t => t.id === taskId);
+            if(task) {
+                const index = task.completedBy.indexOf(stuId);
+                if(index > -1) {
+                    task.completedBy.splice(index, 1);
+                } else {
+                    task.completedBy.push(stuId);
+                }
+                saveData();
+                renderTrackingCards(); 
+            }
+        };
+
+        window.deleteTaskCard = (taskId) => {
+            showModal(
+                '<i class="fa-solid fa-trash-can text-peach-500"></i> 刪除追蹤項目',
+                '確定要刪除整個任務追蹤卡片嗎？<br><span class="text-peach-500 text-xs mt-1 block font-bold">注意：相關的學生完成紀錄都會一併消失喔！</span>',
+                () => {
+                    trackingTasks = trackingTasks.filter(t => t.id !== taskId);
+                    saveData();
+                    renderTrackingCards();
+                }
+            );
+        };
+
+        // ==========================================
+        //  行事曆 (Schedules) 
+        // ==========================================
+        function formatDisplayDate(dateStr) {
+            const d = new Date(dateStr);
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            if(d.toDateString() === today.toDateString()) return '<span class="text-red-400 font-black">今天</span>';
+            if(d.toDateString() === tomorrow.toDateString()) return '<span class="text-orange-400 font-bold">明天</span>';
+            return `${d.getMonth()+1}/${d.getDate()}`;
+        }
+
+        window.filterSchedule = (type) => {
+            scheduleFilter = type;
+            ['all', 'team', 'admin', 'other'].forEach(t => {
+                const btn = document.getElementById(`btn-sch-${t}`);
+                if(t === type) {
+                    btn.classList.add('bg-white', 'text-stone-700', 'shadow-sm');
+                    btn.classList.remove('text-stone-400', 'hover:text-stone-700');
+                } else {
+                    btn.classList.remove('bg-white', 'text-stone-700', 'shadow-sm');
+                    btn.classList.add('text-stone-400', 'hover:text-stone-700');
+                }
+            });
+            renderSchedules();
+        };
+
+        function renderSchedules() {
+            const list = document.getElementById('scheduleList');
+            list.innerHTML = '';
+            
+            let sortedSchedules = [...schedules].sort((a, b) => new Date(a.date) - new Date(b.date));
+            if(scheduleFilter !== 'all') {
+                sortedSchedules = sortedSchedules.filter(s => s.type === scheduleFilter);
+            }
+
+            if(sortedSchedules.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-10 text-stone-400 bg-white/40 rounded-2xl border border-macaronCoffee-200/50">
+                        <i class="fa-solid fa-mug-hot text-4xl mb-3 text-macaronCoffee-300"></i>
+                        <p class="font-bold">無近期任務安排。</p>
+                    </div>`;
+                return;
+            }
+
+            sortedSchedules.forEach(sch => {
+                let icon, bgClass, textClass, tag;
+                if(sch.type === 'team') {
+                    icon = '<i class="fa-solid fa-running"></i>';
+                    bgClass = 'bg-cutePink-50 border-cutePink-100';
+                    textClass = 'text-cutePink-500';
+                    tag = '校隊事務';
+                } else if(sch.type === 'admin') {
+                    icon = '<i class="fa-solid fa-building"></i>';
+                    bgClass = 'bg-cuteBlue-50 border-cuteBlue-100';
+                    textClass = 'text-cuteBlue-500';
+                    tag = '學校行政';
+                } else {
+                    icon = '<i class="fa-solid fa-thumbtack"></i>';
+                    bgClass = 'bg-white border-macaronCoffee-200';
+                    textClass = 'text-stone-500';
+                    tag = '其他事務';
+                }
+
+                const item = document.createElement('div');
+                item.className = `flex items-center p-3 rounded-2xl border ${bgClass} bg-white transition-transform hover:-translate-y-1 hover:shadow-md`;
+                item.innerHTML = `
+                    <div class="w-14 flex flex-col items-center justify-center border-r border-macaronCoffee-200/60 pr-3 mr-3">
+                        <div class="text-[10px] text-stone-400">${new Date(sch.date).getFullYear()}</div>
+                        <div class="text-base font-black text-stone-700">${formatDisplayDate(sch.date)}</div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-macaronCoffee-50 ${textClass} shadow-sm border border-macaronCoffee-200/50">
+                                ${icon} ${tag}
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-stone-700 text-sm">${sch.title}</h4>
+                    </div>
+                    <button onclick="deleteSchedule(${sch.id})" class="text-stone-300 hover:text-red-400 p-2 transition-colors">
+                        <i class="fa-solid fa-trash text-sm"></i>
+                    </button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        document.getElementById('scheduleForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const date = document.getElementById('schDate').value;
+            const type = document.getElementById('schType').value;
+            const title = document.getElementById('schTitle').value;
+            if(!date || !title) return;
+
+            schedules.push({ id: Date.now(), date, type, title });
+            document.getElementById('schTitle').value = '';
+            saveData();
+            renderSchedules();
+        });
+
+        window.deleteSchedule = (id) => {
+            showModal(
+                '<i class="fa-solid fa-calendar-xmark text-lavender-400"></i> 刪除日程',
+                '確定要將這筆行程從行事曆中刪除嗎？',
+                () => {
+                    schedules = schedules.filter(s => s.id !== id);
+                    saveData();
+                    renderSchedules();
+                }
+            );
+        };
+
+        // === 初始執行 ===
+        document.getElementById('schDate').valueAsDate = new Date();
+        renderTeamSelector();
+        renderRoster();
+        renderTrackingCards();
+        renderSchedules();
+
+    </script>
+</body>
+</html>
